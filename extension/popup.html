@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>TsecBench 赛事监督</title>
+    <link rel="stylesheet" href="extension.css">
+  </head>
+  <body class="popup-page">
+    <main class="popup-shell">
+      <header class="brand-row">
+        <div class="brand-mark">TS</div>
+        <div>
+          <h1>赛事监督</h1>
+          <p>TsecBench 本地模式</p>
+        </div>
+        <span id="statusDot" class="status-dot" aria-label="状态"></span>
+      </header>
+
+      <section id="setupNotice" class="notice warning" hidden>
+        <p id="setupTitle" class="notice-title"></p>
+        <p id="setupDetail" class="notice-detail"></p>
+        <button id="setupGoOptions" class="button primary" type="button">去配置令牌</button>
+      </section>
+
+      <section class="status-card">
+        <div class="status-line">
+          <span>采集状态</span>
+          <label class="switch">
+            <input id="enabled" type="checkbox">
+            <span aria-hidden="true"></span>
+          </label>
+        </div>
+        <dl class="metrics">
+          <div><dt>参赛者</dt><dd id="participant">—</dd></div>
+          <div><dt>待上传</dt><dd id="queueSize">0</dd></div>
+          <div><dt>最近上传</dt><dd id="lastUpload">—</dd></div>
+        </dl>
+        <p id="lastError" class="error-text" hidden></p>
+      </section>
+
+      <div class="button-row">
+        <button id="flush" class="button secondary" type="button">立即同步</button>
+        <button id="dashboard" class="button primary" type="button">查看成绩面板</button>
+      </div>
+      <button id="options" class="text-button" type="button">设置与隐私说明</button>
+    </main>
+    <script src="popup.js"></script>
+  </body>
+</html>

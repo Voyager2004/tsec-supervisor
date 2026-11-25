@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="dark">
+    <title>Tsec Supervisor · 实时赛况</title>
+    <link rel="stylesheet" href="/static/app.css">
+    <script src="/static/app.js" defer></script>
+  </head>
+  <body>
+    <div class="ambient ambient-one"></div>
+    <div class="ambient ambient-two"></div>
+    <header class="site-header">
+      <a class="brand" href="/" aria-label="返回实时赛况">
+        <span>
+          <strong>Tsec Supervisor</strong>
+        </span>
+      </a>
+      <div class="header-actions">
+        <span class="live-pill"><i></i> LIVE</span>
+        <button id="admin-open" class="ghost-button" type="button">管理控制台</button>
+      </div>
+    </header>
+
+    <main class="page-shell">
+      <section class="hero">
+        <div>
+          <p class="eyebrow">AGENT COMPETITION CONTROL ROOM</p>
+          <h1 id="event-name">TsecBench 挑战赛</h1>
+          <p class="scoring-notice" id="scoring-notice"></p>
+        </div>
+        <div class="hero-side">
+          <div class="hero-clock">
+            <span>北京时间</span>
+            <strong id="clock">--:--:--</strong>
+            <small id="refresh-label">等待首次同步</small>
+          </div>
+          <div class="hero-countdown">
+            <span>距比赛结束</span>
+            <strong id="countdown">--:--:--</strong>
+            <small id="countdown-label"></small>
+          </div>
+        </div>
+      </section>
+
+      <section class="metrics" aria-label="比赛概况">
+        <article class="metric-card podium-card">
+          <span>领奖台</span>
+          <ol id="podium-list" class="podium-list"></ol>
+        </article>
+        <article class="metric-card centered">
+          <span>当前题集</span>
+          <strong id="metric-setname" class="set-name">等待数据</strong>
+          <small id="metric-setstatus">等待题集观测</small>
+        </article>
+        <article class="metric-card centered">
+          <span>已解出题目</span>
+          <strong id="metric-challenges">0</strong>
+          <small>至少一名选手解出</small>
+        </article>
+        <article class="metric-card accent centered">
+          <span>累计解题</span>
+          <strong id="metric-solves">0</strong>
+          <small>选手解题总次数</small>
+        </article>
+      </section>
+
+      <section class="panel chart-panel" aria-labelledby="score-chart-title">
+        <div class="panel-heading">
+          <div>
+            <p id="score-chart-eyebrow" class="eyebrow">SCORE VELOCITY</p>
+            <h2 id="score-chart-title">得分趋势</h2>
+          </div>
+          <div class="chart-heading-side">
+            <div id="score-chart-legend" class="chart-legend" aria-label="选手图例"></div>
+            <div class="chart-switch" role="group" aria-label="得分图表切换">
+              <button id="chart-mode-trend" class="chart-switch-button active" type="button" aria-pressed="true">趋势</button>
+              <button id="chart-mode-distribution" class="chart-switch-button" type="button" aria-pressed="false">分布</button>
+            </div>
+          </div>
+        </div>
+        <div class="chart-body">
+          <div id="trend-chart-view" class="chart-view">
+            <svg id="score-chart" viewBox="0 0 1200 360" role="img" aria-label="各选手得分随时间变化折线图"></svg>
+            <div id="score-chart-empty" class="chart-empty">等待选手上传得分数据</div>
+          </div>
+          <div id="distribution-chart-view" class="chart-view" hidden>
+            <svg id="score-distribution-chart" viewBox="0 0 1200 360" role="img" aria-label="所有选手当前原始累计分分布直方图"></svg>
+            <div id="score-distribution-empty" class="chart-empty">等待选手上传得分数据</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel leaderboard-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">LIVE SCOREBOARD</p>
+            <h2>实时成绩榜</h2>
+          </div>
+          <div class="legend">
+            <span><i class="dot observed"></i>观察中</span>
+            <span><i class="dot verified"></i>已核验</span>
+            <span><i class="dot risk"></i>需复核</span>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>排名</th>
+                <th>选手 / Tsec 账号</th>
+                <th>起始时间</th>
+                <th>状态</th>
+                <th class="numeric">解题进度</th>
+                <th class="numeric">原始累计分</th>
+                <th class="numeric">有效耗时</th>
+                <th>核验</th>
+              </tr>
+            </thead>
+            <tbody id="scoreboard-body"></tbody>
+          </table>
+          <div id="scoreboard-empty" class="empty-state">
+            <span>∅</span>
+            <p>等待选手插件上传第一条跑分数据</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <dialog id="admin-login-dialog" class="modal">
+      <form id="admin-login-form" class="modal-card">
+        <div class="modal-heading">
+          <div>
+            <p class="eyebrow">RESTRICTED</p>
+            <h2>管理员验证</h2>
+          </div>
+          <button id="admin-login-close" class="icon-button" type="button" aria-label="关闭">×</button>
+        </div>
+        <label>
+          管理员 Token
+          <input id="admin-token" type="password" autocomplete="current-password" required>
+        </label>
+        <p id="admin-login-error" class="form-error" role="alert"></p>
+        <button class="primary-button" type="submit">进入控制台</button>
+      </form>
+    </dialog>
+
+    <section id="admin-console" class="admin-console" hidden>
+      <div class="admin-header">
+        <div>
+          <p class="eyebrow">ADMIN CONTROL</p>
+          <h2>比赛监督控制台</h2>
+          <p id="admin-set-alert" class="admin-set-alert" hidden></p>
+        </div>
+        <div class="header-actions">
+          <button id="admin-refresh" class="ghost-button" type="button">刷新</button>
+          <button id="admin-close" class="ghost-button" type="button">退出管理</button>
+        </div>
+      </div>
+
+      <div class="admin-metrics">
+        <article><span>启用选手</span><strong id="admin-count-participants">0</strong></article>
+        <article><span>跑分任务</span><strong id="admin-count-runs">0</strong></article>
+        <article><span>采集事件</span><strong id="admin-count-events">0</strong></article>
+        <article><span>得分事件</span><strong id="admin-count-score-events">0</strong></article>
+      </div>
+
+      <div class="admin-grid">
+        <section class="panel compact-panel">
+          <div class="panel-heading">
+            <div><p class="eyebrow">ENROLLMENT</p><h3>创建选手</h3></div>
+          </div>
+          <form id="participant-form" class="participant-form">
+            <label>显示名称<input id="participant-name" maxlength="80" required></label>
+            <label>编号（选填）<input id="participant-code" maxlength="40" pattern="[A-Za-z0-9_-]+"></label>
+            <label>令牌（选填，留空自动生成）<input id="participant-token-input" maxlength="80" pattern="[A-Za-z0-9_-]+" placeholder="如 test123456"></label>
+            <button class="primary-button" type="submit">生成参赛 Token</button>
+          </form>
+          <div id="new-token-box" class="token-box" hidden>
+            <span>Token 只在此刻完整显示一次</span>
+            <code id="new-token"></code>
+            <button id="copy-new-token" class="ghost-button" type="button">复制 Token</button>
+          </div>
+        </section>
+
+        <section class="panel compact-panel">
+          <div class="panel-heading">
+            <div><p class="eyebrow">BULK IMPORT</p><h3>批量导入选手</h3></div>
+          </div>
+          <form id="bulk-form" class="participant-form">
+            <label>名单（每行：显示名 参赛编号）<textarea id="bulk-text" rows="6" placeholder="选手甲 player-01&#10;选手乙 player-02" required></textarea></label>
+            <button class="primary-button" type="submit">批量导入并生成 Token</button>
+          </form>
+          <div id="bulk-result" class="bulk-result" hidden>
+            <p id="bulk-summary" class="bulk-summary"></p>
+            <div id="bulk-errors" class="bulk-errors"></div>
+            <div class="table-wrap bulk-table-wrap">
+              <table>
+                <thead><tr><th>姓名</th><th>编号</th><th>参赛 Token</th></tr></thead>
+                <tbody id="bulk-tokens-body"></tbody>
+              </table>
+            </div>
+            <button id="copy-bulk-tokens" class="ghost-button" type="button">复制全部（TSV）</button>
+          </div>
+        </section>
+
+        <section class="panel compact-panel">
+          <div class="panel-heading">
+            <div><p class="eyebrow">PARTICIPANTS</p><h3>选手绑定</h3></div>
+          </div>
+          <div id="participant-list" class="participant-list"></div>
+        </section>
+      </div>
+
+      <section class="panel admin-runs-panel">
+        <div class="panel-heading">
+          <div><p class="eyebrow">RISK &amp; EVIDENCE</p><h3>任务与监督信号</h3></div>
+        </div>
+        <div class="table-wrap admin-table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>选手</th>
+                <th>Run ID</th>
+                <th>账号 / Agent</th>
+                <th>成绩</th>
+                <th>来源 IP</th>
+                <th>设备</th>
+                <th>风险</th>
+                <th>核验状态</th>
+                <th>最近上报</th>
+              </tr>
+            </thead>
+            <tbody id="admin-runs-body"></tbody>
+          </table>
+        </div>
+      </section>
+    </section>
+
+    <footer>
+      <span>Tsec Supervisor</span>
+      <span>只采集比赛必要字段 · 不采集 Token / VPN / Flag / 日志</span>
+    </footer>
+  </body>
+</html>

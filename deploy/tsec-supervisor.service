@@ -1,0 +1,33 @@
+[Unit]
+Description=Tsec Supervisor API and scoreboard
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=tsec-supervisor
+Group=tsec-supervisor
+WorkingDirectory=/opt/tsec-supervisor/server
+EnvironmentFile=/etc/tsec-supervisor.env
+ExecStart=/opt/tsec-supervisor/venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000 --workers 1 --no-proxy-headers
+Restart=on-failure
+RestartSec=3
+TimeoutStopSec=20
+UMask=0027
+
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+CapabilityBoundingSet=
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+ReadWritePaths=/var/lib/tsec-supervisor
+
+[Install]
+WantedBy=multi-user.target

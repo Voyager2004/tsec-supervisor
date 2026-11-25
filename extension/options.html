@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>TsecBench 赛事监督设置</title>
+    <link rel="stylesheet" href="extension.css">
+  </head>
+  <body class="options-page">
+    <main class="options-shell">
+      <header class="options-header">
+        <div class="brand-mark large">TS</div>
+        <div>
+          <p class="eyebrow">AGENT COMPETITION CONTROL</p>
+          <h1>TsecBench 赛事监督采集器</h1>
+          <p>配置本机参赛者身份和上报授权。</p>
+        </div>
+      </header>
+
+      <section class="panel">
+        <h2>连接设置</h2>
+        <label class="field">
+          <span>汇总服务器</span>
+          <input id="serverUrl" type="url" inputmode="url" autocomplete="off" readonly>
+          <small>由赛事主办方统一指定，无需修改。</small>
+        </label>
+        <label class="field">
+          <span>参赛者令牌</span>
+          <input id="participantToken" type="password" autocomplete="off" placeholder="主办方签发的令牌">
+          <small id="tokenHint">使用主办方签发的参赛令牌，令牌保存在本机 Chrome 中。</small>
+        </label>
+        <div class="inline-actions">
+          <button id="clearToken" class="button danger" type="button">清除本机令牌</button>
+        </div>
+      </section>
+
+      <section class="panel privacy-panel">
+        <h2>采集范围与同意</h2>
+        <ul>
+          <li>采集：参赛账号标识、run ID、成绩/进度/时间、服务器观察到的 IP，以及粗粒度设备信息。</li>
+          <li>不采集：Cookie、密码、Benchmark Token、VPN 配置、Flag 内容、容器地址、日志或终端输入。</li>
+        </ul>
+        <label class="consent-row">
+          <input id="consent" type="checkbox">
+          <span>我已阅读并同意上述数据采集与赛事监督用途。</span>
+        </label>
+        <label class="consent-row muted">
+          <input id="enabled" type="checkbox">
+          <span>启用采集与自动上报</span>
+        </label>
+      </section>
+
+      <p id="message" class="form-message" role="status"></p>
+      <div class="footer-actions">
+        <button id="save" class="button primary" type="button">保存设置</button>
+        <button id="test" class="button secondary" type="button">保存并测试连接</button>
+        <button id="dashboard" class="text-button" type="button">打开成绩面板</button>
+      </div>
+    </main>
+    <script src="options.js"></script>
+  </body>
+</html>

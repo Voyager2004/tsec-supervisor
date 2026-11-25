@@ -1,0 +1,46 @@
+{
+  "manifest_version": 3,
+  "name": "TsecBench 赛事监督采集器",
+  "version": "0.4.0",
+  "description": "在参赛者同意后，采集 TsecBench 本地模式成绩并上报到赛事面板。",
+  "minimum_chrome_version": "111",
+  "permissions": [
+    "storage",
+    "alarms"
+  ],
+  "host_permissions": [
+    "https://tsecbench.zc.tencent.com/*",
+    "http://127.0.0.1/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://tsecbench.zc.tencent.com/*"
+      ],
+      "js": [
+        "page-hook.js"
+      ],
+      "run_at": "document_start",
+      "world": "MAIN"
+    },
+    {
+      "matches": [
+        "https://tsecbench.zc.tencent.com/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_start",
+      "world": "ISOLATED"
+    }
+  ],
+  "action": {
+    "default_title": "TsecBench 赛事监督",
+    "default_popup": "popup.html"
+  },
+  "options_page": "options.html",
+  "homepage_url": "http://127.0.0.1:8000"
+}
