@@ -63,4 +63,4 @@ python scripts/build_release.py
 
 服务端源码包从当前 Git 提交生成。主办方应使用自己的地址单独生成选手 ZIP。
 
-项目采用 [MIT 许可证](LICENSE)。内置的 ip2region Python 查询代码保留[上游许可证与版权声明](server/app/ip2region/LICENSE)，仓库不附带 IP 地址库。
+项目采用 [MIT 许可证](LICENSE)。内置的 ip2region Python 查询代码保留[上游许可证与版权声明](server/app/ip2region/LICENSE)。
